@@ -1,0 +1,53 @@
+{
+  "name": "@stdlogits/ledger",
+  "version": "0.1.0",
+  "description": "Ledger, the design language of Standard Logits: tokens, the Wix Madefor faces, motion on one curve and the Svelte 5 pieces drawn in them.",
+  "license": "AGPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stdlogits/ledger.git"
+  },
+  "type": "module",
+  "svelte": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "svelte": "./src/index.ts"
+    },
+    "./ledger.css": "./src/styles/ledger.css",
+    "./tokens.css": "./src/styles/tokens.css",
+    "./base.css": "./src/styles/base.css",
+    "./fonts.css": "./src/styles/fonts.css",
+    "./fonts/*": "./src/fonts/*",
+    "./theme-preflight.js": "./src/theme-preflight.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "DESIGN.md"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "peerDependencies": {
+    "svelte": "^5.57.2"
+  },
+  "dependencies": {
+    "torph": "0.1.3"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.0.0",
+    "@types/node": "24.19.2",
+    "svelte": "5.57.2",
+    "svelte-check": "4.4.6",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
+  }
+}
