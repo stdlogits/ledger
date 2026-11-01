@@ -58,6 +58,10 @@ the same key in `data-ledger-theme-key`, applies it before first paint.
 Tints of the accent, always mixed with `color-mix(in oklch, …)`: 9% (a token a head attended to),
 14% (a token two reads agree on), 22% (the token a unit fired on), 26% (variants of a hovered token).
 
+No colour stands for an error, a warning or danger: the one hue is depth. A failure is one plain
+sentence and one way out; an invalid field darkens toward ink, `color-mix(in oklab, var(--ink) 14%, …)`
+over its own fill, with its reason under it; a destructive action asks to be confirmed.
+
 Type, as `font:` shorthands: `--type-title` 56 Display 600, `--type-heading` 32 Display 600,
 `--type-lead` 20/500, `--type-label` 16/500, `--type-body` 16/400, `--type-small` 14/400,
 `--type-control` 14/500, `--type-meta` 12/500, `--type-head` 12/600 (section heads, in `--ink3`).
