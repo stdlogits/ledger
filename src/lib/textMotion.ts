@@ -81,6 +81,14 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
   let config = "";
   let disposed = false;
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
+  // A value that changes faster than its morph (a token count while a reply streams) shows as plain
+  // text: Torph measures and restarts every letter on each change, which costs more than the frame
+  // it paints. A change that lands while a morph still runs drops the overlay, and the text morphs
+  // again once it has been still for one duration, from the text on screen.
+  let shown = "";
+  let movingUntil = 0;
+  let streaming = false;
+  let streamTimer: ReturnType<typeof setTimeout> | undefined;
 
   // Torph adds its own screen-reader copy, but the real text already lives in
   // `.morph-source`; remove it so the DOM holds the text once for search and agents.
@@ -110,6 +118,20 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
 
   function paint() {
     if (disposed) return;
+    const previous = shown;
+    const changed = options.text !== previous;
+    // During a stream every paint stays plain, a resize's too; only a change restarts the wait.
+    if (streaming || (changed && performance.now() < movingUntil)) {
+      if (!streaming) clear();
+      streaming = true;
+      shown = options.text;
+      if (changed) {
+        clearTimeout(streamTimer);
+        streamTimer = setTimeout(() => { streaming = false; }, options.duration);
+      }
+      return;
+    }
+    shown = options.text;
     const selected = document.getSelection();
     const enabled = !options.disabled && !reduced?.matches && !document.hidden
       && subscribers.get(host)?.visible && !host.closest("[inert]")
@@ -121,7 +143,12 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
     if (source.getBoundingClientRect().height > line * 1.5) { clear(); return; }
     const numbers = options.numbers && !/[eE][+-]?\d/.test(options.text);
     const nextConfig = JSON.stringify([options.duration, numbers, options.identity, host.closest("[data-morph-snapshot]")?.getAttribute("data-morph-snapshot")]);
+    let animates = changed;
     if (!morph || config !== nextConfig) {
+      // After plain text (a stream, or a pause off screen) the overlay starts from the text that was
+      // shown, so the next change morphs from it; a new identity starts fresh and does not morph.
+      const from = !morph && config === nextConfig ? previous : "";
+      animates = changed && from !== "";
       clear();
       config = nextConfig;
       morph = new TextMorph({
@@ -139,8 +166,10 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
           settle();
         }),
       });
+      if (from) morph.update(from);
     }
     morph.update(options.text);
+    if (animates) movingUntil = performance.now() + options.duration;
     dropAccessibleCopy();
     host.setAttribute("data-morph-active", "");
     // Torph does not report completion when nothing changed, so settle on a timer as well.
@@ -153,6 +182,6 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
   void document.fonts.ready.then(() => { if (!disposed) queue(); });
   return {
     update(next: TextMotionOptions) { options = next; host.removeAttribute("data-morph-active"); queue(); },
-    destroy() { disposed = true; stop(); clear(); },
+    destroy() { disposed = true; clearTimeout(streamTimer); stop(); clear(); },
   };
 }

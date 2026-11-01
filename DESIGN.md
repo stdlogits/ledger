@@ -82,7 +82,7 @@ One curve, `--ease` = `cubic-bezier(.2, 0, 0, 1)` (`ease` in JS).
 | Opening | height and fade together, 240 ms (`Expander`, `expand`) |
 | The atlas arriving | columns 16 ms apart, once per load |
 | Pages, theme | the new view fades in over the old (view transitions) |
-| Text that changes in place | letter morph (`MorphText`, Torph) |
+| Text that changes in place | letter morph (`MorphText`, Torph); a value that changes faster than its morph, such as a count while a reply streams, stays plain until it has been still for one morph's length, then morphs from what is shown |
 
 Reduced motion keeps fades and drops movement.
 

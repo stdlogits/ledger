@@ -72,6 +72,19 @@
 
   // Numbers and swaps.
   let count = $state(344);
+  // A stream: 100 changes 20 ms apart, faster than the morph, so the number shows as plain text and
+  // morphs again once it is still.
+  let streaming = $state<ReturnType<typeof setInterval> | null>(null);
+  function stream() {
+    if (streaming) { clearInterval(streaming); streaming = null; return; }
+    let left = 100;
+    streaming = setInterval(() => {
+      count += 1;
+      if (--left > 0) return;
+      clearInterval(streaming!);
+      streaming = null;
+    }, 20);
+  }
   let meters = $state("a");
   const METERS: Record<string, number[]> = { a: [0.12, 0.48, 0.86], b: [0.64, 0.2, 0.97] };
   let step = $state(0);
@@ -290,6 +303,7 @@
             <IconButton icon="left" label="Previous" onclick={() => (count -= 1)} />
             <span class="id"><MorphText text={`L8·n${count}`} /></span>
             <IconButton icon="right" label="Next" onclick={() => (count += 1)} />
+            <IconButton icon={streaming ? "pause" : "play"} label={streaming ? "Stop the stream" : "Stream 100 changes"} onclick={stream} />
           </div>
           <span class="lead"><MorphText text={count % 2 ? "released" : "release"} numbers={false} /></span>
         </div>
