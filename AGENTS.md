@@ -53,7 +53,7 @@ side effect of serving one product.
 As a git dependency at a tag or a commit, never a branch:
 
 ```json
-"dependencies": { "@stdlogits/ledger": "github:stdlogits/ledger#v0.1.1" }
+"dependencies": { "@stdlogits/ledger": "github:stdlogits/ledger#v0.1.2" }
 ```
 
 To release: bump `version` in `package.json`, commit, tag `v<version>`, push the tag; each product then
