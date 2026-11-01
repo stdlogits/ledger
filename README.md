@@ -10,7 +10,7 @@ Pin it as a git dependency (Svelte 5.57 or newer, Vite with `@sveltejs/vite-plug
 ships TypeScript and `.svelte` sources for the product to compile):
 
 ```json
-"dependencies": { "@stdlogits/ledger": "github:stdlogits/ledger#v0.1.0" }
+"dependencies": { "@stdlogits/ledger": "github:stdlogits/ledger#v0.1.1" }
 ```
 
 Keep it out of Vite's dependency pre-bundling, and compile it into a server build:
