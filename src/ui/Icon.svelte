@@ -15,6 +15,7 @@
     auto: ["M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z", "M12 4a8 8 0 0 1 0 16Z"],
     play: ["M8 5.5v13l10.5-6.5Z"],
     pause: ["M8.5 5.5v13", "M15.5 5.5v13"],
+    menu: ["M4 7h16", "M4 12h16", "M4 17h16"],
   } as const;
   export type IconName = keyof typeof PATHS;
   // Paths that are filled rather than stroked: the play triangle, auto's dark half.

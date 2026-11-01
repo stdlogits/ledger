@@ -90,7 +90,8 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
 
 - **Controls.** `Segmented` (a few exclusive options, ink thumb), `Tabs` (many options, text only),
   `Switch`, `IconButton` (36 px round wash), `ThemeButton` (the one theme button), `Icon` (and
-  `IconName`), `Expander` (a text button that opens below).
+  `IconName`: search, up, down, left, right, link, check, close, external, sun, moon, auto, play,
+  pause, menu; 24-unit strokes, round caps), `Expander` (a text button that opens below).
 - **Tokens.** `Token` (a wash chip; · marks a word start, ×n variants, a value in 12 px), `Context` (a
   firing on a wash, the token marked), `LabelText` (a label whose foreign terms translate), `Meter` (a
   24 × 4 tint bar). Their text conventions are in `src/lib/tokens.ts`: `tokenParts` (a leading space
