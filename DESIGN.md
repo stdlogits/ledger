@@ -26,15 +26,30 @@ card per piece) is https://claude.ai/artifact/EySC7fJPJAtVAmhFndggfx; re-sync it
 - **Motion everywhere, noticed nowhere.** Every change moves, quickly, on one curve. Nothing loops,
   pulses, sweeps or ripples.
 
-## The mark and the card
+## The marks and the cards
 
-neuron-lens.com's mark (`public/favicon.svg` there) is a lens cut from the depth ramp: a tile rounded
-at a quarter of its side, filled left to right from `--deep` to `--late` through their oklch mix (the
-one place the whole ramp is a single gradient), with an upright biconvex lens in the paper's colour,
-white in light and `#0B0D12` in dark, each theme on its own ramp. Where a platform rounds or masks
-icons itself, the tile goes full bleed. Its social card (`scripts/site/card.html` there) is the
-explorer in miniature: the mark and name, one unit's ID, a firing on a wash and its writes as chips,
-over the model's atlas at the explorer's geometry. No sentences.
+A mark is a small icon for browser tabs, home screens and link cards, never a logo: in a header, the
+name set in type is the mark. Every mark is the same tile cut from the depth ramp: a square rounded at
+a quarter of its side, filled left to right from `--deep` to `--late` through their oklch mix (stops at
+each quarter; the one place the whole ramp is a single gradient), with one figure in the paper's
+colour, white in light and `#0B0D12` in dark, each theme on its own ramp. Where a platform rounds or
+masks icons itself, the tile goes full bleed.
+
+- **neuron-lens.com** (`public/favicon.svg` there): an upright biconvex lens, filled, 20 tall and 12
+  wide in 32.
+- **drowse** (the dashboard's `drowse-mark-light.svg` and `drowse-mark-dark.svg`): a closed eye,
+  stroked 4.5 in 64 with round caps and joins. The lid is an arc 34 wide that sags 12, from (15, 27)
+  through (32, 39) to (49, 27); three lashes hang from it about 5.5 long, the middle one straight down
+  from its lowest point and the outer two splayed outward from (21.5, 34.5) and (42.5, 34.5).
+- **standardlogits.com** (`public/favicon.svg` there): the logit curve, stroked 4.5 in 64 with round
+  caps. It is logit(p) for p from 1% to 99%: p runs across, 0 to 1 over 14 to 50, and the logit up,
+  −ln 99 to ln 99 over the same span, so it rises steeply, flattens through the middle and rises
+  steeply again.
+
+A social card is its product in miniature, with no sentences. neuron-lens.com's
+(`scripts/site/card.html` there) is the explorer: the mark and name, one unit's ID, a firing on a wash
+and its writes as chips, over the model's atlas at the explorer's geometry. standardlogits.com's is its
+hero: the mark, the name with ·Log marked, and what Qwen3-8B-Base expected after "Standard" instead.
 
 ## Tokens (`src/styles/tokens.css`)
 
