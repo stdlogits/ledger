@@ -240,7 +240,10 @@
         <div class="cell">
           <h3 class="head">Expander</h3>
           <Expander label="Show more" openLabel="Show less">
-            <div class="toks">{#each TOKENS.slice(4, 8) as item, i (i)}<Token {...item} {i} />{/each}</div>
+            <div class="stack">
+              <Segmented options={[{ value: "reads", label: "Reads" }, { value: "writes", label: "Writes" }]} value={side === "writes" ? "writes" : "reads"} onchange={(value) => (side = value)} label="Side, in the fold" />
+              <div class="toks">{#each TOKENS.slice(4, 8) as item, i (i)}<Token {...item} {i} />{/each}</div>
+            </div>
           </Expander>
         </div>
         <div class="cell">
@@ -378,6 +381,7 @@
   .cell > :global(*) { max-width: 100%; }
   .wide { grid-column: 1 / -1; }
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); }
+  .stack { display: grid; justify-items: start; gap: var(--s3); }
 
   .paper-demo { display: grid; gap: var(--s2); width: 100%; }
   .wash-demo { display: grid; gap: var(--s2); padding: var(--s3) var(--s4) var(--s4); border-radius: var(--r-box); background: var(--wash); }

@@ -72,7 +72,7 @@ One curve, `--ease` = `cubic-bezier(.2, 0, 0, 1)` (`ease` in JS).
 | What | How |
 | --- | --- |
 | Hover, press | 120 ms (`--fast`): colour or wash; buttons press to 0.97 |
-| A selection moving | 240 ms (`--glide`): the `glide` action slides one thumb under the chosen child (segmented controls, the atlas column, the layer list, the faces table) |
+| A selection moving | 240 ms (`--glide`): the `glide` action slides one thumb under the chosen child (segmented controls, the atlas column, the layer list, the faces table); an inert page around it doesn't hide the thumb, so a control in a closed `Expander` is ready when the fold opens |
 | Content changing | out 120 ms, in 200 ms with a 6 px rise (`Swap`, `rise`, `fadeOut`) |
 | Lists appearing | 24 ms apart, 160 ms at most (`.rise` with `--i`, `stagger(i)`) |
 | Opening | height and fade together, 240 ms (`Expander`, `expand`) |

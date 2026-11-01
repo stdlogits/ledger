@@ -77,7 +77,10 @@ export function expand(node: Element, { duration = GLIDE }: { duration?: number 
  * A selection that glides. Put it on a container whose selected child carries aria-pressed,
  * aria-selected or aria-current="true" (or matches `selector`); a thumb (span.glide-thumb, styled by
  * the container) slides under that child whenever the selection or the layout changes. The first
- * placement doesn't animate, so the thumb never flies in from the corner.
+ * placement doesn't animate, so the thumb never flies in from the corner. A selected child inside an
+ * inert part of the container (a closed fold within it) is passed over; an inert page around the
+ * container is not, so the thumb is already in place when a closed Expander or a dialog's backdrop
+ * comes back to life.
  */
 export function glide(node: HTMLElement, selector = "[aria-pressed='true'], [aria-selected='true'], [aria-current='true'], [aria-current='page']") {
   const thumb = document.createElement("span");
@@ -88,9 +91,15 @@ export function glide(node: HTMLElement, selector = "[aria-pressed='true'], [ari
   let placed = false;
   let frame = 0;
 
+  /** Not inside an inert part of the container: inert ancestors above it don't count. */
+  function live(element: HTMLElement) {
+    for (let at: HTMLElement | null = element; at && at !== node; at = at.parentElement) if (at.inert) return false;
+    return true;
+  }
+
   function place() {
     frame = 0;
-    const target = [...node.querySelectorAll<HTMLElement>(selector)].find((element) => element !== thumb && element.isConnected && !element.closest("[inert]"));
+    const target = [...node.querySelectorAll<HTMLElement>(selector)].find((element) => element !== thumb && element.isConnected && live(element));
     if (!target || target.offsetParent === null) {
       thumb.style.opacity = "0";
       placed = false;
@@ -115,7 +124,7 @@ export function glide(node: HTMLElement, selector = "[aria-pressed='true'], [ari
   const queue = () => { if (!frame) frame = requestAnimationFrame(place); };
 
   const mutations = new MutationObserver(queue);
-  mutations.observe(node, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-pressed", "aria-selected", "aria-current", "class"] });
+  mutations.observe(node, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-pressed", "aria-selected", "aria-current", "class", "inert"] });
   const resize = new ResizeObserver(queue);
   resize.observe(node);
   void document.fonts?.ready.then(queue);
