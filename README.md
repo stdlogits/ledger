@@ -13,6 +13,23 @@ ships TypeScript and `.svelte` sources for the product to compile):
 "dependencies": { "@stdlogits/ledger": "github:stdlogits/ledger#v0.1.0" }
 ```
 
+Keep it out of Vite's dependency pre-bundling, and compile it into a server build:
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  plugins: [svelte()],
+  optimizeDeps: { exclude: ["@stdlogits/ledger"] },
+  ssr: { noExternal: ["@stdlogits/ledger"] }, // only when the product renders on the server
+});
+```
+
+The pre-bundler hands Ledger's runes modules (`theme.svelte.ts`, `translate.svelte.ts`) to Svelte with
+their types still in, so the dev server must serve Ledger as source. Use `@sveltejs/vite-plugin-svelte`
+7.1.2 or newer: before it, the dev server can't find an excluded package's compiled styles and serves
+each piece's raw `.svelte` source as its stylesheet, which drops the piece's first rule and leaks the
+rest, unscoped, onto the whole page. Production builds were never affected.
+
 ```ts
 // main.ts
 import "@stdlogits/ledger/ledger.css"; // or fonts.css, tokens.css, base.css, in that order
