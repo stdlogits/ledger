@@ -2,6 +2,7 @@
 // press take 120 ms; a selection glides to its new place in 240 ms; content leaves in 120 ms and
 // arrives in 200 ms with a 6 px rise; lists reveal 24 ms apart, 160 ms at most. Nothing loops.
 import type { TransitionConfig } from "svelte/transition";
+import { onFontsLoad } from "./fonts";
 
 export const FAST = 120;
 export const GLIDE = 240;
@@ -127,13 +128,14 @@ export function glide(node: HTMLElement, selector = "[aria-pressed='true'], [ari
   mutations.observe(node, { subtree: true, childList: true, attributes: true, attributeFilter: ["aria-pressed", "aria-selected", "aria-current", "class", "inert"] });
   const resize = new ResizeObserver(queue);
   resize.observe(node);
-  void document.fonts?.ready.then(queue);
+  const unfonts = onFontsLoad(queue);
   place();
 
   return {
     update(next?: string) { if (next) selector = next; queue(); },
     destroy() {
       cancelAnimationFrame(frame);
+      unfonts();
       mutations.disconnect();
       resize.disconnect();
       thumb.remove();

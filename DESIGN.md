@@ -101,6 +101,10 @@ One curve, `--ease` = `cubic-bezier(.2, 0, 0, 1)` (`ease` in JS).
 
 Reduced motion keeps fades and drops movement.
 
+What measures text (the `glide` thumb, `MorphText`) measures again when web fonts finish loading,
+through one `loadingdone` listener on the page (`src/lib/fonts.ts`), and never reads
+`document.fonts.ready`: in Chrome that read forces a style update, once per mount.
+
 ## Pieces (`src/ui`, `src/lib`)
 
 Everything here is exported from `@stdlogits/ledger`. The styles are separate entries:

@@ -1,4 +1,5 @@
 import { TextMorph } from "torph";
+import { onFontsLoad } from "./fonts";
 
 export type TextMotionOptions = {
   text: string;
@@ -179,9 +180,9 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
 
   const queue = () => schedule(host, paint);
   const stop = observe(host, queue);
-  void document.fonts.ready.then(() => { if (!disposed) queue(); });
+  const unfonts = onFontsLoad(queue);
   return {
     update(next: TextMotionOptions) { options = next; host.removeAttribute("data-morph-active"); queue(); },
-    destroy() { disposed = true; clearTimeout(streamTimer); stop(); clear(); },
+    destroy() { disposed = true; clearTimeout(streamTimer); unfonts(); stop(); clear(); },
   };
 }
