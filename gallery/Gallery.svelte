@@ -28,7 +28,7 @@
   const TYPES = ["title", "heading", "lead", "label", "body", "small", "control", "meta", "head"];
   const SPACE = [4, 8, 12, 16, 24, 32, 48, 64, 96];
   const RADII = ["chip", "col", "box", "row", "pill"];
-  const ICONS: IconName[] = ["search", "up", "down", "left", "right", "link", "check", "close", "external", "sun", "moon", "auto", "play", "pause", "menu"];
+  const ICONS: IconName[] = ["search", "up", "down", "left", "right", "link", "check", "close", "external", "sun", "moon", "auto", "play", "pause", "menu", "expand", "plus", "minus", "focus"];
 
   // Controls.
   let side = $state<"reads" | "writes" | "both">("reads");
