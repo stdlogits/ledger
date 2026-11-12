@@ -13,13 +13,35 @@ export interface TipContent { title?: string; body?: string; sub?: string; lang?
 let tip: HTMLDivElement | null = null;
 let shownFor: Element | DOMRect | null = null;
 /** How long a mouse rests on a target before its tip shows (focus and a tap show it at once). */
-export const TIP_DELAY = 700;
+export const TIP_DELAY = 400;
 /** A tip waiting for the pointer to rest: the latest thing it would show. */
 let pending: { anchor: DOMRect | Element; content: TipContent } | null = null;
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 const shownNow = () => !!tip && !tip.hidden;
+/** Where the pointer last was (mouse, pen or finger), so a tip can sit right over it. */
+let pointer: { x: number; y: number } | null = null;
+let tracking = false;
+const note = (event: PointerEvent) => { pointer = { x: event.clientX, y: event.clientY }; };
+function track() {
+  if (tracking || typeof document === "undefined") return;
+  tracking = true;
+  for (const type of ["pointermove", "pointerdown", "pointerover"] as const) document.addEventListener(type, note, { capture: true, passive: true });
+}
+
+/** The box to sit over: of a target that wraps onto several lines, the line under the pointer; and the
+ * point on it to centre on: the pointer, when it is over the box, else the box's middle (focus). */
+function placeFor(anchor: DOMRect | Element): { box: DOMRect; x: number } {
+  const near = (r: DOMRect) => !!pointer && pointer.x >= r.left - 2 && pointer.x <= r.right + 2 && pointer.y >= r.top - 2 && pointer.y <= r.bottom + 2;
+  let box = anchor instanceof Element ? anchor.getBoundingClientRect() : anchor;
+  if (anchor instanceof Element) {
+    const line = [...anchor.getClientRects()].find(near);
+    if (line) box = line;
+  }
+  return { box, x: near(box) ? pointer!.x : box.left + box.width / 2 };
+}
 
 function element(): HTMLDivElement {
+  track();
   if (tip) return tip;
   tip = document.createElement("div");
   tip.className = "tip";
@@ -38,10 +60,12 @@ function line(className: string, text: string, lang?: string) {
   return span;
 }
 
-/** Show the tip beside a box (above it when there is room). Moving between targets glides it. With `wait`
+/** Show the tip over a box (above it when there is room, below it when not), centred on the pointer
+ * when the pointer is on it. Moving between targets glides it. With `wait`
  * (a pointer passing over a chart), it shows once the pointer has been there TIP_DELAY, with whatever was
  * last asked for, unless a tip is already showing (then it moves to the new place at once). */
 export function showTip(anchor: DOMRect | Element, content: TipContent, { wait = false }: { wait?: boolean } = {}) {
+  track();
   if (wait && !shownNow()) {
     pending = { anchor, content };
     pendingTimer ??= setTimeout(() => {
@@ -65,10 +89,10 @@ export function showTip(anchor: DOMRect | Element, content: TipContent, { wait =
   node.replaceChildren(...children);
   const wasShown = !node.hidden && node.classList.contains("shown");
   node.hidden = false;
-  const box = anchor instanceof Element ? anchor.getBoundingClientRect() : anchor;
+  const { box, x } = placeFor(anchor);
   node.style.maxWidth = `${Math.min(320, window.innerWidth - 24)}px`;
   const own = node.getBoundingClientRect();
-  const left = Math.max(12, Math.min(window.innerWidth - own.width - 12, box.left + box.width / 2 - own.width / 2));
+  const left = Math.max(12, Math.min(window.innerWidth - own.width - 12, x - own.width / 2));
   const above = box.top - own.height - 8;
   const top = above > 8 ? above : box.bottom + 8;
   node.classList.toggle("gliding", wasShown);
@@ -101,6 +125,7 @@ function contentFor(target: HTMLElement, refresh: () => void, mayLoad: boolean):
 /** Svelte action for a page root: hover, focus and touch on any target inside it. A mouse's tip waits for
  * the pointer to rest (TIP_DELAY); a token's variants still light at once. */
 export function tips(root: HTMLElement) {
+  track();
   let linked: Element[] = [];
   let current: HTMLElement | null = null;
   /** The current target's tip is showing (not still waiting). */
