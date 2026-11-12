@@ -12,6 +12,16 @@ export interface TipContent { title?: string; body?: string; sub?: string; lang?
 
 let tip: HTMLDivElement | null = null;
 let shownFor: Element | DOMRect | null = null;
+/** How long a mouse rests on a target before its tip shows (focus and a tap show it at once). */
+export const TIP_DELAY = 1000;
+/** For this long after a tip goes, the next shows at once, so moving along a row of controls (or across a chart) doesn't wait each time. */
+const WARM = 600;
+let warmUntil = 0;
+/** A tip waiting for the pointer to rest: the latest thing it would show. */
+let pending: { anchor: DOMRect | Element; content: TipContent } | null = null;
+let pendingTimer: ReturnType<typeof setTimeout> | undefined;
+const shownNow = () => !!tip && !tip.hidden;
+const warm = () => shownNow() || performance.now() < warmUntil;
 
 function element(): HTMLDivElement {
   if (tip) return tip;
@@ -32,8 +42,23 @@ function line(className: string, text: string, lang?: string) {
   return span;
 }
 
-/** Show the tip beside a box (above it when there is room). Moving between targets glides it. */
-export function showTip(anchor: DOMRect | Element, content: TipContent) {
+/** Show the tip beside a box (above it when there is room). Moving between targets glides it. With `wait`
+ * (a pointer passing over a chart), it shows once the pointer has been there TIP_DELAY, with whatever was
+ * last asked for, unless a tip is showing or has just gone. */
+export function showTip(anchor: DOMRect | Element, content: TipContent, { wait = false }: { wait?: boolean } = {}) {
+  if (wait && !warm()) {
+    pending = { anchor, content };
+    pendingTimer ??= setTimeout(() => {
+      pendingTimer = undefined;
+      const next = pending;
+      pending = null;
+      if (next) showTip(next.anchor, next.content);
+    }, TIP_DELAY);
+    return;
+  }
+  clearTimeout(pendingTimer);
+  pendingTimer = undefined;
+  pending = null;
   const node = element();
   const children = [];
   if (content.title) children.push(line("tip-title", content.title, content.lang));
@@ -57,6 +82,10 @@ export function showTip(anchor: DOMRect | Element, content: TipContent) {
 }
 
 export function hideTip() {
+  clearTimeout(pendingTimer);
+  pendingTimer = undefined;
+  pending = null;
+  if (shownNow()) warmUntil = performance.now() + WARM;
   shownFor = null;
   if (!tip) return;
   tip.classList.remove("shown", "gliding");
@@ -74,12 +103,16 @@ function contentFor(target: HTMLElement, refresh: () => void, mayLoad: boolean):
   return translator().tip(term, refresh, mayLoad);
 }
 
-/** Svelte action for a page root: hover, focus and touch on any target inside it. */
+/** Svelte action for a page root: hover, focus and touch on any target inside it. A mouse's tip waits for
+ * the pointer to rest (TIP_DELAY); a token's variants still light at once. */
 export function tips(root: HTMLElement) {
   let linked: Element[] = [];
   let current: HTMLElement | null = null;
+  /** The current target's tip is showing (not still waiting). */
+  let revealed = false;
+  let waiting: ReturnType<typeof setTimeout> | undefined;
   // A shown tip follows its target's words when they change under it (a button that toggles, say).
-  const words = new MutationObserver(() => { if (current) show(current, false); });
+  const words = new MutationObserver(() => { if (current && revealed) show(current, false); });
 
   function clearLinked() {
     for (const node of linked) node.classList.remove("linked");
@@ -87,14 +120,18 @@ export function tips(root: HTMLElement) {
   }
 
   function show(target: HTMLElement, mayLoad = true) {
-    const content = contentFor(target, () => { if (current === target) show(target, false); }, mayLoad);
+    clearTimeout(waiting);
+    revealed = true;
+    const content = contentFor(target, () => { if (current === target && revealed) show(target, false); }, mayLoad);
     if (!content) { hideTip(); target.removeAttribute("aria-describedby"); return; }
     showTip(target, content);
     target.setAttribute("aria-describedby", "tip");
   }
 
-  function enter(target: HTMLElement) {
-    if (target === current) return;
+  /** `now`: show the tip at once (focus, a tap), else once the pointer has rested, unless a tip has just shown. */
+  function enter(target: HTMLElement, now = true) {
+    if (target === current) { if (now && !revealed) show(target); return; }
+    const hot = revealed || warm();
     leave(false);
     current = target;
     const key = target.dataset.stem;
@@ -104,11 +141,15 @@ export function tips(root: HTMLElement) {
       if (linked.length > 1) for (const node of linked) node.classList.add("linked");
       else linked = [];
     }
-    show(target);
     words.observe(target, { attributeFilter: ["data-tip", "data-tip-title", "data-tip-sub"] });
+    if (now || hot) show(target);
+    else waiting = setTimeout(() => { if (current === target) show(target); }, TIP_DELAY);
   }
 
   function leave(hide = true) {
+    clearTimeout(waiting);
+    if (revealed && shownNow()) warmUntil = performance.now() + WARM;
+    revealed = false;
     words.disconnect();
     clearLinked();
     current?.removeAttribute("aria-describedby");
@@ -119,7 +160,8 @@ export function tips(root: HTMLElement) {
   const targetOf = (event: Event) => (event.target as Element | null)?.closest?.<HTMLElement>(TARGET) ?? null;
   const over = (event: Event) => {
     const target = targetOf(event);
-    if (target && root.contains(target)) enter(target);
+    // A mouse waits to rest; focus and a touch don't.
+    if (target && root.contains(target)) enter(target, !(event instanceof PointerEvent && event.pointerType === "mouse"));
   };
   const out = (event: PointerEvent | FocusEvent) => {
     // Focus-driven scrolling moves the element under a still pointer: keep a focused target's tip.
@@ -141,7 +183,7 @@ export function tips(root: HTMLElement) {
   const scroll = () => {
     if (!current) return;
     const box = current.getBoundingClientRect();
-    if ((current.contains(document.activeElement) || current.matches(":hover")) && box.bottom > 0 && box.top < window.innerHeight) show(current, false);
+    if ((current.contains(document.activeElement) || current.matches(":hover")) && box.bottom > 0 && box.top < window.innerHeight) { if (revealed) show(current, false); }
     else leave();
   };
 
@@ -155,6 +197,7 @@ export function tips(root: HTMLElement) {
 
   return {
     destroy() {
+      clearTimeout(waiting);
       leave();
       root.removeEventListener("pointerover", over);
       root.removeEventListener("pointerout", out);

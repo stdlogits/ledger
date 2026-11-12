@@ -21,7 +21,7 @@ export { FAST, GLIDE, IN, OUT, ease, expand, fadeIn, fadeOut, glide, reducedMoti
 export { textMotion, type TextMotionOptions } from "./lib/textMotion";
 
 // The tip.
-export { hideTip, showTip, tips, type TipContent } from "./lib/tips";
+export { TIP_DELAY, hideTip, showTip, tips, type TipContent } from "./lib/tips";
 
 // The theme.
 export { createTheme, type Choice, type Mode, type Theme } from "./lib/theme.svelte";

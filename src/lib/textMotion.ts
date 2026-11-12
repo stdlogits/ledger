@@ -133,6 +133,12 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
       return;
     }
     shown = options.text;
+    // The same words again (fonts arriving, a resize, a parent handing down an equal value): nothing to morph.
+    // Idle text stays plain, and the painted copy is dropped so the next change measures afresh, from these words.
+    if (!changed && !host.hasAttribute("data-morph-active")) {
+      if (morph) { morph.destroy(); morph = null; node.replaceChildren(); node.removeAttribute("style"); }
+      return;
+    }
     const selected = document.getSelection();
     const enabled = !options.disabled && !reduced?.matches && !document.hidden
       && subscribers.get(host)?.visible && !host.closest("[inert]")
@@ -182,7 +188,14 @@ export function textMotion(node: HTMLElement, initial: TextMotionOptions) {
   const stop = observe(host, queue);
   const unfonts = onFontsLoad(queue);
   return {
-    update(next: TextMotionOptions) { options = next; host.removeAttribute("data-morph-active"); queue(); },
+    update(next: TextMotionOptions) {
+      const same = next.text === options.text && next.numbers === options.numbers && next.duration === options.duration && next.identity === options.identity && next.disabled === options.disabled;
+      options = next;
+      // An equal value (a parent's state recomputed) leaves a morph under way, or plain text, as it is.
+      if (same) return;
+      host.removeAttribute("data-morph-active");
+      queue();
+    },
     destroy() { disposed = true; clearTimeout(streamTimer); unfonts(); stop(); clear(); },
   };
 }

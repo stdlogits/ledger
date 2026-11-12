@@ -6,7 +6,7 @@
   // One token: a wash chip in the text face. A faint dot marks a word start; ×n counts the variants
   // merged into it; a value is what it measured. A token two reads agree on is tinted. With English
   // on (the product's translator, lib/translate.svelte.ts), a token from another language morphs into
-  // its English and turns italic. Hovering one lights up its variants across its data-link-scope
+  // its English on a wash of the tint. Hovering one lights up its variants across its data-link-scope
   // (lib/tips.ts), and a foreign token's tip gives its meaning.
   let { token, count = 1, times, flags = 0, value, i = 0 }: {
     token: string;
@@ -74,7 +74,8 @@
   .n { margin-left: 6px; color: var(--ink3); font: var(--type-meta); font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .byte { background: transparent; color: var(--ink3); }
   .agree { background: color-mix(in oklch, var(--tint) 14%, var(--paper)); }
-  .en { font-style: italic; }
+  /* A token shown in English: its chip takes a wash of the tint rather than the plain wash. */
+  .en { background: color-mix(in oklch, var(--tint) 14%, var(--wash)); }
   @media (hover: hover) { .tok:hover { background: var(--wash2); } .agree:hover { background: color-mix(in oklch, var(--tint) 22%, var(--paper)); } }
   /* Its variants across the unit, while one is hovered. */
   :global(.tok.linked) { background: color-mix(in oklch, var(--tint) 26%, var(--paper)); }

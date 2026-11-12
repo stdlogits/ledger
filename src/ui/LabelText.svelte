@@ -56,5 +56,7 @@
     text-underline-offset: 0.2em;
     cursor: help;
   }
-  .en { font-style: italic; text-decoration: none; }
+  /* English for a foreign term: upright, on a light wash of the tint, so a translation reads as one at a glance
+     (a shadow, not padding, widens the wash, so the text doesn't move). */
+  .en { text-decoration: none; background: color-mix(in oklch, var(--tint) 14%, transparent); box-shadow: 0 0 0 2px color-mix(in oklch, var(--tint) 14%, transparent); }
 </style>

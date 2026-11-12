@@ -127,10 +127,12 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
 - **The tip** (frosted glass, blurred behind) is one element for the page (`src/lib/tips.ts`): put
   `use:tips` on the page root and give anything `data-tip` (and optionally `data-tip-title`,
   `data-tip-sub`), or call `showTip`/`hideTip`. Tokens inside a `data-link-scope` light up their
-  variants.
+  variants at once. A mouse's tip waits for the pointer to rest on its target for a second (`TIP_DELAY`); for a
+  moment after one goes, the next shows at once. Focus and a tap show it at once.
 - **The theme.** `createTheme({ key })` (`choice`, `system`, `mode`, `start`, `next`, `set`) and
   `theme-preflight.js`.
 - **Translation.** Ledger draws English for foreign text and owns none of it. A product that has
   translations installs a `Translator` with `setTranslator` before it mounts (`on`, `maybe`, `inline`,
   `tip`); without one, nothing is a term, contexts show their own text and terms have no tip.
-  `FOREIGN`, `FOREIGN_RUN` and `languageName` are the shared helpers.
+  `FOREIGN`, `FOREIGN_RUN` and `languageName` are the shared helpers. English drawn for foreign text is upright
+  on a light wash of the tint (a term, a token's chip, a context's wash), so a translation reads as one at a glance.

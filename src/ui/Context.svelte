@@ -4,7 +4,7 @@
 
   // One top firing, on a wash: ⟦ ⟧ marks the token where the unit fired (tinted), ⟪ ⟫ the token an
   // attention head read from (a fainter tint). With English on (the product's translator), a
-  // translated context shows its English in italic, its language beside it; the language's tip shows
+  // translated context shows its English on a tinted wash, its language beside it; the language's tip shows
   // the original.
   let { context, clip = true, i = 0 }: { context: ContextLine; clip?: boolean; i?: number } = $props();
 
@@ -38,7 +38,8 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  .en { font-style: italic; }
+  /* A context shown in English: upright, on a wash tinged with the tint, its language named at its end. */
+  .en { background: color-mix(in oklch, var(--tint) 7%, var(--wash)); }
   /* The highlight grows with a shadow, not padding, so the token stays joined to its word. */
   mark { border-radius: 4px; color: var(--ink); }
   mark.hit { background: color-mix(in oklch, var(--tint) 22%, transparent); box-shadow: 0 0 0 2px color-mix(in oklch, var(--tint) 22%, transparent); }
