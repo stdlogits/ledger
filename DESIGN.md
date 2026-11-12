@@ -134,5 +134,6 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
 - **Translation.** Ledger draws English for foreign text and owns none of it. A product that has
   translations installs a `Translator` with `setTranslator` before it mounts (`on`, `maybe`, `inline`,
   `tip`); without one, nothing is a term, contexts show their own text and terms have no tip.
-  `FOREIGN`, `FOREIGN_RUN` and `languageName` are the shared helpers. English drawn for foreign text is upright
-  on a light wash of the tint (a term, a token's chip, a context's wash), so a translation reads as one at a glance.
+  `FOREIGN`, `FOREIGN_RUN` and `languageName` are the shared helpers. English drawn for foreign text is italic
+  (a token's chip, a context, a term), and a term in a label also sits on a light wash of the tint, so a
+  translation reads as one at a glance.
