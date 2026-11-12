@@ -71,7 +71,8 @@ under its own key: `createTheme({ key })` owns it, and `theme-preflight.js`, loa
 the same key in `data-ledger-theme-key`, applies it before first paint.
 
 Tints of the accent, always mixed with `color-mix(in oklch, …)`: 9% (a token a head attended to),
-14% (a token two reads agree on), 22% (the token a unit fired on), 26% (variants of a hovered token).
+14% (a token two reads agree on, and that word wherever else it appears in its `data-link-scope`, a
+translated token by its English, so a word never shows two ways on a page), 22% (the token a unit fired on), 26% (variants of a hovered token).
 
 No colour stands for an error, a warning or danger: the one hue is depth. A failure is one plain
 sentence and one way out; an invalid field darkens toward ink, `color-mix(in oklab, var(--ink) 14%, …)`

@@ -23,7 +23,8 @@ side effect of serving one product.
 - `src/lib/`: `motion.ts` (the curve, durations, transitions, `glide`), `textMotion.ts` (Torph, under
   `MorphText`), `fonts.ts` (one listener that re-measures them when web fonts load), `tips.ts`,
   `theme.svelte.ts` (`createTheme`), `tokens.ts` (how tokens and contexts are split and shown),
-  `translate.svelte.ts` (the `Translator` seam and its no-op default).
+  `translate.svelte.ts` (the `Translator` seam and its no-op default), `agree.svelte.ts` (the words a
+  `data-link-scope`'s reads agree on, shared by its tokens).
 - `src/ui/`: the pieces.
 - `src/theme-preflight.js`: the pre-paint theme script, a classic script that reads its
   `data-ledger-theme-key` attribute.

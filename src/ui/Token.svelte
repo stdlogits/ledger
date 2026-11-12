@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { untrack } from "svelte";
   import MorphText from "./MorphText.svelte";
   import { formatValue, stem, tokenParts } from "../lib/tokens";
   import { translator } from "../lib/translate.svelte";
+  import { agreed } from "../lib/agree.svelte";
 
   // One token: a wash chip in the text face. A faint dot marks a word start; ×n counts the variants
-  // merged into it; a value is what it measured. A token two reads agree on is tinted. With English
+  // merged into it; a value is what it measured. A token two reads agree on is tinted, and so is the same
+  // word anywhere else in its data-link-scope, its English for a token from another language. With English
   // on (the product's translator, lib/translate.svelte.ts), a token from another language morphs into
   // its English and turns italic. Hovering one lights up its variants across its data-link-scope
   // (lib/tips.ts), and a foreign token's tip gives its meaning.
@@ -22,9 +25,28 @@
   } = $props();
 
   const parts = $derived(tokenParts(token));
-  const agree = $derived((flags & 1) !== 0);
+  const marked = $derived((flags & 1) !== 0);
   const term = $derived(!parts.byte && !parts.empty && translator().maybe(token) ? token.trim() : undefined);
   const english = $derived(term ? translator().inline(term) : "");
+  /** The words it is, by stem: its own, and its English while shown. */
+  const keys = $derived(parts.byte || parts.empty ? [] : [...new Set([stem(token), english ? stem(english) : ""])].filter(Boolean));
+  let node = $state<HTMLElement>();
+  const words = $derived(node ? agreed(node.closest("[data-link-scope]") ?? node) : null);
+  // A token its read marks tells its scope, for as long as it is shown.
+  $effect(() => {
+    if (!marked || !words) return;
+    const mine = keys;
+    const into = words;
+    untrack(() => { for (const key of mine) into.set(key, (into.get(key) ?? 0) + 1); });
+    return () => untrack(() => {
+      for (const key of mine) {
+        const left = (into.get(key) ?? 1) - 1;
+        if (left > 0) into.set(key, left);
+        else into.delete(key);
+      }
+    });
+  });
+  const agree = $derived(marked || (!!words && keys.some((key) => words.has(key))));
   const shown = $derived(english || (parts.empty ? "∅" : parts.text));
   const described = $derived([
     parts.lead ? "word start" : "",
@@ -39,6 +61,7 @@
 <!-- Tokens from other languages are buttons, so a keyboard can reach their translation. -->
 <svelte:element
   this={term ? "button" : "span"}
+  bind:this={node}
   type={term ? "button" : undefined}
   class="tok rise"
   class:byte={parts.byte}
