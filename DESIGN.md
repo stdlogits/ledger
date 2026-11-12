@@ -127,7 +127,7 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
 - **The tip** (frosted glass, blurred behind) is one element for the page (`src/lib/tips.ts`): put
   `use:tips` on the page root and give anything `data-tip` (and optionally `data-tip-title`,
   `data-tip-sub`), or call `showTip`/`hideTip`. Tokens inside a `data-link-scope` light up their
-  variants at once. A mouse's tip waits for the pointer to rest on its target for 0.4 s (`TIP_DELAY`),
+  variants at once. A mouse's tip waits for the pointer to rest on its target for 0.1 s (`TIP_DELAY`),
   every time it moves to a new target, and sits centred over the pointer, above the line it rests on (a
   focused target's tip centres on the target). Focus and a tap show it at once.
 - **The theme.** `createTheme({ key })` (`choice`, `system`, `mode`, `start`, `next`, `set`) and

@@ -13,7 +13,7 @@ export interface TipContent { title?: string; body?: string; sub?: string; lang?
 let tip: HTMLDivElement | null = null;
 let shownFor: Element | DOMRect | null = null;
 /** How long a mouse rests on a target before its tip shows (focus and a tap show it at once). */
-export const TIP_DELAY = 400;
+export const TIP_DELAY = 100;
 /** A tip waiting for the pointer to rest: the latest thing it would show. */
 let pending: { anchor: DOMRect | Element; content: TipContent } | null = null;
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
