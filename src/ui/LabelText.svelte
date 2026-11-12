@@ -56,7 +56,6 @@
     text-underline-offset: 0.2em;
     cursor: help;
   }
-  /* English for a foreign term: italic, on a light wash of the tint, so a translation reads as one at a glance
-     (a shadow, not padding, widens the wash, so the text doesn't move). */
-  .en { font-style: italic; text-decoration: none; background: color-mix(in oklch, var(--tint) 14%, transparent); box-shadow: 0 0 0 2px color-mix(in oklch, var(--tint) 14%, transparent); }
+  /* English for a foreign term: the term's dotted underline, in italic. */
+  .en { font-style: italic; }
 </style>
