@@ -13,15 +13,11 @@ export interface TipContent { title?: string; body?: string; sub?: string; lang?
 let tip: HTMLDivElement | null = null;
 let shownFor: Element | DOMRect | null = null;
 /** How long a mouse rests on a target before its tip shows (focus and a tap show it at once). */
-export const TIP_DELAY = 1000;
-/** For this long after a tip goes, the next shows at once, so moving along a row of controls (or across a chart) doesn't wait each time. */
-const WARM = 600;
-let warmUntil = 0;
+export const TIP_DELAY = 700;
 /** A tip waiting for the pointer to rest: the latest thing it would show. */
 let pending: { anchor: DOMRect | Element; content: TipContent } | null = null;
 let pendingTimer: ReturnType<typeof setTimeout> | undefined;
 const shownNow = () => !!tip && !tip.hidden;
-const warm = () => shownNow() || performance.now() < warmUntil;
 
 function element(): HTMLDivElement {
   if (tip) return tip;
@@ -44,9 +40,9 @@ function line(className: string, text: string, lang?: string) {
 
 /** Show the tip beside a box (above it when there is room). Moving between targets glides it. With `wait`
  * (a pointer passing over a chart), it shows once the pointer has been there TIP_DELAY, with whatever was
- * last asked for, unless a tip is showing or has just gone. */
+ * last asked for, unless a tip is already showing (then it moves to the new place at once). */
 export function showTip(anchor: DOMRect | Element, content: TipContent, { wait = false }: { wait?: boolean } = {}) {
-  if (wait && !warm()) {
+  if (wait && !shownNow()) {
     pending = { anchor, content };
     pendingTimer ??= setTimeout(() => {
       pendingTimer = undefined;
@@ -85,7 +81,6 @@ export function hideTip() {
   clearTimeout(pendingTimer);
   pendingTimer = undefined;
   pending = null;
-  if (shownNow()) warmUntil = performance.now() + WARM;
   shownFor = null;
   if (!tip) return;
   tip.classList.remove("shown", "gliding");
@@ -128,11 +123,11 @@ export function tips(root: HTMLElement) {
     target.setAttribute("aria-describedby", "tip");
   }
 
-  /** `now`: show the tip at once (focus, a tap), else once the pointer has rested, unless a tip has just shown. */
+  /** `now`: show the tip at once (focus, a tap), else once the pointer has rested on it, every time. */
   function enter(target: HTMLElement, now = true) {
     if (target === current) { if (now && !revealed) show(target); return; }
-    const hot = revealed || warm();
-    leave(false);
+    // A tip shown at once glides from the last one; one that waits starts clear.
+    leave(!now);
     current = target;
     const key = target.dataset.stem;
     const scope = target.closest("[data-link-scope]");
@@ -142,13 +137,12 @@ export function tips(root: HTMLElement) {
       else linked = [];
     }
     words.observe(target, { attributeFilter: ["data-tip", "data-tip-title", "data-tip-sub"] });
-    if (now || hot) show(target);
+    if (now) show(target);
     else waiting = setTimeout(() => { if (current === target) show(target); }, TIP_DELAY);
   }
 
   function leave(hide = true) {
     clearTimeout(waiting);
-    if (revealed && shownNow()) warmUntil = performance.now() + WARM;
     revealed = false;
     words.disconnect();
     clearLinked();
