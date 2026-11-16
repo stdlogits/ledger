@@ -288,6 +288,7 @@
         <div class="cell wide">
           <h3 class="head">LabelText</h3>
           <p class="label"><LabelText text={LABEL} interactive /></p>
+          <p class="label"><LabelText text={LABEL} interactive lent /></p>
           <p class="label quiet"><LabelText text="" fallback="Unclear" /></p>
         </div>
       </div>
@@ -370,6 +371,7 @@
           <div class="row">
             <span class="target" data-tip="A body only">Body</span>
             <span class="target" data-tip-title="L8·n344" data-tip="A title above the body" data-tip-sub="And a line below">All three</span>
+            <span class="target" data-tip-title="L8·n344" data-tip="Fires on cat in other scripts" data-tip-sub="Written for another model" data-tip-lent="both">Lent</span>
           </div>
         </div>
         <div class="cell">

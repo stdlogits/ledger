@@ -2,13 +2,15 @@
 // covers every token chip (hovering one lights up its variants in the same `data-link-scope`, and a
 // term from another language shows its English, from the product's translator), each translated
 // context's language (its original text), and any element with data-tip (data-tip-title above it,
-// data-tip-sub below). Components that draw their own targets, like an atlas, call showTip and hideTip
-// directly.
+// data-tip-sub below; data-tip-lent sets the body, or the lines it names, in italic as lent).
+// Components that draw their own targets, like an atlas, call showTip and hideTip directly.
 import { languageName, translator } from "./translate.svelte";
 
 const TARGET = ".tok, .term, [data-original], [data-tip]";
 
-export interface TipContent { title?: string; body?: string; sub?: string; lang?: string; roman?: string }
+/** `lent`: which lines were written for something else and stand in for it here, set in italic (in
+ * neuron-lens.com, a base model's labels, written for its post-trained model). */
+export interface TipContent { title?: string; body?: string; sub?: string; lang?: string; roman?: string; lent?: "body" | "sub" | "both" }
 
 let tip: HTMLDivElement | null = null;
 let shownFor: Element | DOMRect | null = null;
@@ -83,8 +85,9 @@ export function showTip(anchor: DOMRect | Element, content: TipContent, { wait =
   const children = [];
   if (content.title) children.push(line("tip-title", content.title, content.lang));
   if (content.roman) children.push(line("tip-sub", content.roman));
-  if (content.body) children.push(line("tip-body", content.body));
-  if (content.sub) children.push(line("tip-sub", content.sub));
+  const lent = (part: "body" | "sub") => (content.lent === part || content.lent === "both" ? " lent" : "");
+  if (content.body) children.push(line(`tip-body${lent("body")}`, content.body));
+  if (content.sub) children.push(line(`tip-sub${lent("sub")}`, content.sub));
   if (!children.length) return hideTip();
   node.replaceChildren(...children);
   const wasShown = !node.hidden && node.classList.contains("shown");
@@ -111,12 +114,15 @@ export function hideTip() {
   tip.hidden = true;
 }
 
+/** data-tip-lent: "sub" or "both", or (bare, or "body") the body. */
+const lentOf = (value: string | undefined): TipContent["lent"] => (value === undefined ? undefined : value === "sub" || value === "both" ? value : "body");
+
 /** `mayLoad`: a fresh hover may ask for the translations (again, after a failure); the redraw when
  * they arrive may not, so a failed load settles instead of retrying in a loop (Translator.tip). */
 function contentFor(target: HTMLElement, refresh: () => void, mayLoad: boolean): TipContent | null {
   const original = target.dataset.original;
   if (original) return { title: original, lang: target.dataset.lang, sub: languageName(target.dataset.lang ?? "") };
-  if (target.dataset.tip) return { title: target.dataset.tipTitle, body: target.dataset.tip, sub: target.dataset.tipSub };
+  if (target.dataset.tip) return { title: target.dataset.tipTitle, body: target.dataset.tip, sub: target.dataset.tipSub, lent: lentOf(target.dataset.tipLent) };
   const term = target.dataset.term;
   if (!term) return null;
   return translator().tip(term, refresh, mayLoad);
@@ -161,7 +167,7 @@ export function tips(root: HTMLElement) {
       if (linked.length > 1) for (const node of linked) node.classList.add("linked");
       else linked = [];
     }
-    words.observe(target, { attributeFilter: ["data-tip", "data-tip-title", "data-tip-sub"] });
+    words.observe(target, { attributeFilter: ["data-tip", "data-tip-title", "data-tip-sub", "data-tip-lent"] });
     if (now) show(target);
     else waiting = setTimeout(() => { if (current === target) show(target); }, TIP_DELAY);
   }

@@ -127,7 +127,8 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
   `stagger`, `reducedMotion` and the `glide` action.
 - **The tip** (frosted glass, blurred behind) is one element for the page (`src/lib/tips.ts`): put
   `use:tips` on the page root and give anything `data-tip` (and optionally `data-tip-title`,
-  `data-tip-sub`), or call `showTip`/`hideTip`. Tokens inside a `data-link-scope` light up their
+  `data-tip-sub`, and `data-tip-lent` to set the body, or `sub` or `both`, in italic as lent), or
+  call `showTip`/`hideTip`. Tokens inside a `data-link-scope` light up their
   variants at once. A mouse's tip waits for the pointer to rest on its target for 0.1 s (`TIP_DELAY`),
   every time it moves to a new target, and sits centred over the pointer, above the line it rests on (a
   focused target's tip centres on the target). Focus and a tap show it at once.
@@ -138,4 +139,6 @@ Everything here is exported from `@stdlogits/ledger`. The styles are separate en
   `tip`); without one, nothing is a term, contexts show their own text and terms have no tip.
   `FOREIGN`, `FOREIGN_RUN` and `languageName` are the shared helpers. English drawn for foreign text is italic
   (a token's chip, a context, a term in a label, which keeps its dotted underline), so a translation reads
-  as one at a glance.
+  as one at a glance. Italic means standing in: text written for something else and lent to this one is
+  italic too (`LabelText`'s `lent`; a tip's `lent`, or `data-tip-lent`, naming the lines lent), as
+  neuron-lens.com sets a base model's labels, written for its post-trained model.

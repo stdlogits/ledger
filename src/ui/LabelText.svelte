@@ -5,8 +5,9 @@
   // Prose such as a model-written label, whose quoted examples may be in another language. Those runs
   // are terms: hovering or focusing one shows its English, and with English on they morph into it.
   // Labels already inside a link or button keep plain spans; standalone ones can focus each term.
-  // Only runs the product's translator may translate become terms: without one, this is plain text.
-  let { text, fallback = "Unclear", interactive = false }: { text: string; fallback?: string; interactive?: boolean } = $props();
+  // Only runs the product's translator may translate become terms: without one, this is plain text. A lent
+  // label, written for something else and standing in for it here, is italic throughout.
+  let { text, fallback = "Unclear", interactive = false, lent = false }: { text: string; fallback?: string; interactive?: boolean; lent?: boolean } = $props();
 
   // Punctuation hugging a term stays on its line: a button is an atomic inline even when styled
   // inline, so without this a comma after a focusable term can wrap onto a line of its own.
@@ -35,7 +36,7 @@
   });
 </script>
 
-<span class="label-text">{#each parts as part, i (i)}{#if part.term}{@const english = part.glossed ? "" : translator().inline(part.text)}<span class="glue">{part.lead}<svelte:element this={interactive ? "button" : "span"} type={interactive ? "button" : undefined} class="term" class:en={english !== ""} data-term={part.text} lang={english ? "en" : undefined}><MorphText text={english || part.text} numbers={false} />{#if english}<span class="sr-only">{` (translated from ${part.text})`}</span>{/if}</svelte:element>{part.tail}</span>{:else}{part.text}{/if}{/each}</span>
+<span class="label-text" class:lent>{#each parts as part, i (i)}{#if part.term}{@const english = part.glossed ? "" : translator().inline(part.text)}<span class="glue">{part.lead}<svelte:element this={interactive ? "button" : "span"} type={interactive ? "button" : undefined} class="term" class:en={english !== ""} data-term={part.text} lang={english ? "en" : undefined}><MorphText text={english || part.text} numbers={false} />{#if english}<span class="sr-only">{` (translated from ${part.text})`}</span>{/if}</svelte:element>{part.tail}</span>{:else}{part.text}{/if}{/each}</span>
 
 <style>
   .label-text { overflow-wrap: anywhere; }
@@ -58,4 +59,6 @@
   }
   /* English for a foreign term: the term's dotted underline, in italic. */
   .en { font-style: italic; }
+  /* A lent label: italic for the same reason, all through. */
+  .lent { font-style: italic; }
 </style>
