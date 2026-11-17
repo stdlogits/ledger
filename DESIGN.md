@@ -28,8 +28,8 @@ card per piece) is https://claude.ai/artifact/EySC7fJPJAtVAmhFndggfx; re-sync it
 
 ## The marks and the cards
 
-A mark is a small icon for browser tabs, home screens and link cards, never a logo: in a header, the
-name set in type is the mark. Every mark is the same tile cut from the depth ramp: a square rounded at
+A mark is a small icon for browser tabs and home screens, never a logo: in a header, and on a link card,
+the name set in type is the mark. Every mark is the same tile cut from the depth ramp: a square rounded at
 a quarter of its side, filled left to right from `--deep` to `--late` through their oklch mix (stops at
 each quarter; the one place the whole ramp is a single gradient), with one figure in the paper's
 colour, white in light and `#0B0D12` in dark, each theme on its own ramp. Where a platform rounds or
@@ -46,10 +46,31 @@ masks icons itself, the tile goes full bleed.
   −ln 99 to ln 99 over the same span, so it rises steeply, flattens through the middle and rises
   steeply again.
 
-A social card is its product in miniature, with no sentences. neuron-lens.com's
-(`scripts/site/card.html` there) is the explorer: the mark and name, one unit's ID, a firing on a wash
-and its writes as chips, over the model's atlas at the explorer's geometry. standardlogits.com's is its
-hero: the mark, the name with ·Log marked, and what Qwen3-8B-Base expected after "Standard" instead.
+A social card is a painting with the name set over it: art, wordmark, accents, and no mark tile, because the
+painting is the mark's tile at card size. Its ground is the depth ramp as a dusk, deep at the left and late at
+the right; the mark's figure is in it as a thing in the scene; and the product's own data lies in it as part of
+the scene, never as a chart on top. Figures are semi-realistic or in silhouette. Nothing is drawn around data
+that does not fit it exactly.
+
+A painting is a program (`src/paint`: `brush.py`, a bristle-brush engine, and `dusk.py`, the ramp and the
+touches the paintings share; Python with numpy, scipy and Pillow), run by the product's own image script, so a
+card is repainted when its data changes. The type over it is `card.css`, in the dark tokens: the name in
+Display, 80 px, as the main wording; then at most one pill and one line of the product's own text with a token
+marked in the tint, or a readout or two set at their places in the painting. No sentences about the product,
+and little small text.
+
+- **neuron-lens.com** (`scripts/site/paint/lens.py` there): a lens held up to Qwen3-8B's night sky. Every neuron
+  the labeller was sure of is a light out of focus, as bright as it was sure, in its layer's column. The lens,
+  the mark's figure at the mark's proportions, sits on L8·n344, and through it that one is sharp: a little owl
+  against the moon. Under the name, the unit's ID and its firing, "hear the sound of the owls".
+- **drowse** (`webui/scripts/paint/harbour.py` there): the harbour its line describes, "the harbour goes quiet as
+  the last boats come in". The quay has a lamp for each of the model's layers, in that layer's colour, and each
+  lamp's reflection is as long as "quiet" reads calm there. The last boat in is the mark: its sheer line the
+  closed lid, its three lights' reflections the lashes.
+- **standardlogits.com** (`scripts/site/paint/river.py` there): the logit curve as a river at dusk, seen from
+  above. What Qwen3-8B-Base expected after "Standard" floats down it as lanterns in rank order, the river's
+  length the whole vocabulary on a log scale, each as bright as its token was likely. The name is the line, with
+  ·Log marked; the likeliest token and ·Log are read out at their lanterns.
 
 ## Tokens (`src/styles/tokens.css`)
 
@@ -110,7 +131,8 @@ through one `loadingdone` listener on the page (`src/lib/fonts.ts`), and never r
 
 Everything here is exported from `@stdlogits/ledger`. The styles are separate entries:
 `@stdlogits/ledger/ledger.css` (or `fonts.css`, `tokens.css`, `base.css`, in that order), the faces
-`@stdlogits/ledger/fonts/*`, and the pre-paint script `@stdlogits/ledger/theme-preflight.js`.
+`@stdlogits/ledger/fonts/*`, and the pre-paint script `@stdlogits/ledger/theme-preflight.js`. A social card's
+type is `@stdlogits/ledger/card.css` and its paint `@stdlogits/ledger/paint/*` (above, "The marks and the cards").
 
 - **Controls.** `Segmented` (a few exclusive options, ink thumb), `Tabs` (many options, text only),
   `Switch`, `IconButton` (36 px round wash), `ThemeButton` (the one theme button), `Icon` (and

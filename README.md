@@ -60,6 +60,35 @@ does):
 A product that has English for foreign text installs a translator before it mounts; without one,
 nothing is a term and contexts show their own text.
 
+## Cards
+
+A product's social card is a painting with its name set over it (`DESIGN.md`, "The marks and the cards"). The
+paint is here, as Python source (numpy, scipy and Pillow): `src/paint/brush.py`, a bristle-brush engine in which
+a painting is a program of strokes, and `src/paint/dusk.py`, the depth ramp and the touches the cards share. So
+is the type, `@stdlogits/ledger/card.css`. The scene is the product's own program, which its image script runs
+before setting the type:
+
+```python
+import sys
+sys.path.insert(0, "node_modules/@stdlogits/ledger/src/paint")
+from brush import Canvas, FILBERT
+from dusk import W, H, PAPER, RAMP, GLOW, LIGHT, ramp, wash, disc, vignette
+
+cv = Canvas(W, H, scale=2, ground=tuple(PAPER))
+wash(cv, lambda x, y: ramp(RAMP, x / W) * (0.3 + 0.5 * y / H))    # the ramp as a dusk
+...                                                                # the scene
+vignette(cv)
+cv.save_card("art.png")
+```
+
+```html
+<html lang="en" data-theme="dark">
+<link rel="stylesheet" href="../../node_modules/@stdlogits/ledger/src/styles/card.css">
+<body style="--tint: color-mix(in oklch, var(--deep) 77%, var(--late))">
+  <img class="art" src="art.png" alt="">
+  <main class="card"><div class="name">Neuron Lens</div> ... </main>
+```
+
 ## The gallery
 
 Every piece on one page, with the theme button and a stand-in translator: `npm install`, then

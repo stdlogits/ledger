@@ -1,6 +1,6 @@
 {
   "name": "@stdlogits/ledger",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Ledger, the design language of Standard Logits: tokens, the Wix Madefor faces, motion on one curve and the Svelte 5 pieces drawn in them.",
   "license": "AGPL-3.0-or-later",
   "repository": {
@@ -19,7 +19,9 @@
     "./tokens.css": "./src/styles/tokens.css",
     "./base.css": "./src/styles/base.css",
     "./fonts.css": "./src/styles/fonts.css",
+    "./card.css": "./src/styles/card.css",
     "./fonts/*": "./src/fonts/*",
+    "./paint/*": "./src/paint/*",
     "./theme-preflight.js": "./src/theme-preflight.js",
     "./package.json": "./package.json"
   },

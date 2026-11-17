@@ -19,6 +19,10 @@ side effect of serving one product.
 - `src/index.ts`: the one JS entry (the pieces, motion, the tip, the theme, tokens, translation).
 - `src/styles/`: `tokens.css`, `base.css`, `fonts.css`, and `ledger.css`, which imports the three in
   that order.
+- `src/styles/card.css` and `src/paint/`: a social card's type and its paint (`brush.py`, the engine;
+  `dusk.py`, the ramp and what the paintings share). Python, run by each product's image script from
+  `node_modules`; nothing in `src/index.ts` knows of them. A change to either repaints every product's card, so
+  repaint all three and look before tagging.
 - `src/fonts/`: Wix Madefor Display and Text, split by script, with their OFL licence.
 - `src/lib/`: `motion.ts` (the curve, durations, transitions, `glide`), `textMotion.ts` (Torph, under
   `MorphText`), `fonts.ts` (one listener that re-measures them when web fonts load), `tips.ts`,
@@ -42,7 +46,7 @@ side effect of serving one product.
   strips natively (types only: no enums, no parameter properties), so no product needs a preprocessor for
   it, and that passes a strict product `tsconfig` (`@tsconfig/svelte`, `verbatimModuleSyntax`).
 - The exports map has one JS entry, `.` (`types` and `svelte` conditions), and plain entries for each CSS
-  file, `fonts/*` and `theme-preflight.js`. A new public file goes into `exports` and into `DESIGN.md`'s
+  file, `fonts/*`, `paint/*` and `theme-preflight.js`. A new public file goes into `exports` and into `DESIGN.md`'s
   Pieces; a new piece or helper goes into `src/index.ts`, `DESIGN.md` and the gallery.
 - `DESIGN.md`'s rules hold here as everywhere: flat and borderless, the tint only as fill, Wix Madefor
   only with tabular numbers, one curve, reduced motion keeps fades and drops movement, and nothing

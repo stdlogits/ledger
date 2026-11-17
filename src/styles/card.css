@@ -1,0 +1,36 @@
+/* A social card's type (DESIGN.md, "The marks and the cards"): a 1200 × 630 page that its painting fills, with
+   the name and at most one pill and one marked line of the product's own text set over it. A painting is a dark
+   surface, so the page takes the dark tokens: its html sets data-theme="dark" on the root and --tint for its
+   depth. A product's card.html links this file and adds only where its type sits. */
+@import "./fonts.css";
+@import "./tokens.css";
+
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1200px; height: 630px; overflow: hidden; }
+body { position: relative; background: var(--paper); color: var(--ink); font-family: var(--text); font-synthesis: none; -webkit-font-smoothing: antialiased; }
+
+/* The painting, then the type over it: the name at the top, the product's line at the foot unless the card says otherwise. */
+.art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 56px 64px; }
+
+/* The name is the card's main wording. */
+.name { font: 600 80px/1 var(--display); letter-spacing: -0.035em; white-space: nowrap; }
+
+/* One pill and one line. On paint a wash is the paper let through, not a fill of its own. */
+.page { display: grid; justify-items: start; gap: 20px; }
+.term { display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 20px 0 7px; border-radius: 999px; background: color-mix(in oklch, var(--paper) 46%, transparent); font: 500 24px/1 var(--text); font-variant-numeric: tabular-nums; }
+.term.plain { padding: 0 20px; }
+.term i { font-style: normal; color: var(--ink3); }
+.alpha { display: grid; place-items: center; min-width: 66px; height: 38px; padding: 0 13px; border-radius: 999px; background: color-mix(in oklch, var(--paper) 62%, transparent); }
+.said { font: 400 40px/60px var(--text); letter-spacing: -0.01em; white-space: nowrap; }
+
+/* A marked token: the tint as fill, its 2 px spread up and down in the same mix. --v is how strongly, 42% unless set. */
+.said mark, .said span { border-radius: 6px; color: var(--ink); background: color-mix(in oklch, var(--tint) var(--v, 42%), transparent); box-shadow: 0 -2px 0 0 color-mix(in oklch, var(--tint) var(--v, 42%), transparent), 0 2px 0 0 color-mix(in oklch, var(--tint) var(--v, 42%), transparent); }
+
+/* A token chip and the value beside it, for a readout set at a place in the painting. */
+.tok { padding: 2px 13px; border-radius: 9px; background: color-mix(in oklch, var(--paper) 46%, transparent); font: 400 24px/34px var(--text); }
+.tok.marked { background: color-mix(in oklch, var(--tint) 38%, color-mix(in oklch, var(--paper) 46%, transparent)); }
+.ws { margin-right: 1px; color: var(--ink3); }
+.at { position: absolute; display: flex; align-items: center; gap: 12px; transform: translateY(-50%); white-space: nowrap; }
+.at .value { color: var(--ink2); font: 500 20px/1 var(--text); font-variant-numeric: tabular-nums; }
+.at .value b { color: var(--ink); font-weight: 600; }
